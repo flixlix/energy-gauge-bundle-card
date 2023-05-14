@@ -1,10 +1,17 @@
 {
   "gauge_name": {
     "autarky": "Autarkie",
-    "self_consumption": "Eigenverbrauch"
+    "self_consumption": "Selbstkonsum"
   },
   "tooltip": {
-    "autarky": "Der Autarkie-Messer zeigt, wie viel des Energieverbrauchs Ihres Hauses durch eigene Systeme wie Solarenergie oder Hausbatterien abgedeckt wird.",
-    "self_consumption": "Der Eigenverbrauch-Messer zeigt, wie viel Ihrer hausinternen Solarenergieproduktion selbst verbraucht wird. Dieser Wert ist vorteilhaft, d.h. je mehr Ihrer Solarenergieproduktion im eigenen Haus verbraucht wird, desto besser und höher ist die Zahl."
+    "autarky": "Die Autarkieanzeige zeigt an, wie viel des Energieverbrauchs Ihres Hauses durch Ihre eigenen Systeme wie Solaranlagen oder Hausbatterien gedeckt wird.",
+    "self_consumption": "Die Eigenverbrauchsanzeige zeigt an, wie viel von der Solarproduktion Ihres Hauses von Ihrem Haus verbraucht wird. Dieser Wert ist vorteilhaft, d. h. je mehr von Ihrer Solarproduktion von Ihrem Haus verbraucht wird, desto besser und höher ist die Zahl."
+  },
+  "ui_editor": {
+    "gauge_type": "Art der Anzeige",
+    "tooltip": "Werkzeugtipp",
+    "show_tooltip": "Werkzeugtipp anzeigen",
+    "show_name": "Name anzeigen",
+    "only_for_tap_action": "Nur für Aktion"
   }
 }
