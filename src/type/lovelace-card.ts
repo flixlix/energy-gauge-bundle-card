@@ -7,7 +7,6 @@ export interface LovelaceCardConfig {
   view_layout?: any;
   type: string;
   title?: string;
-  [key: string]: any;
 }
 
 export interface LovelaceCard extends HTMLElement {

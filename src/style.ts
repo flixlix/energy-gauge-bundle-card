@@ -1,34 +1,25 @@
 import { css } from 'lit';
 
 export const styles = css`
-  ha-card {
-    cursor: pointer;
-    padding: 1rem;
+  :host {
+    --cursor-type: 'default';
   }
-  h1 {
-    padding: 0;
-    padding-bottom: 1rem;
-  }
-`;
-
-export const stylesBase = css`
   ha-card {
     height: 100%;
     overflow: hidden;
-    padding: 16px;
+    padding: 1rem;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
     box-sizing: border-box;
   }
-
   ha-gauge {
+    cursor: var(--cursor-type);
     width: 100%;
     max-width: 250px;
     direction: ltr;
   }
-
   .name {
     text-align: center;
     line-height: initial;
@@ -37,11 +28,10 @@ export const stylesBase = css`
     font-size: 15px;
     margin-top: 8px;
   }
-
   ha-svg-icon {
     position: absolute;
-    right: 4px;
-    top: 4px;
+    right: 1rem;
+    top: 1rem;
     color: var(--secondary-text-color);
   }
   simple-tooltip > span {
@@ -51,6 +41,6 @@ export const stylesBase = css`
   simple-tooltip {
     width: 80%;
     max-width: 250px;
-    top: 8px !important;
+    top: 1rem !important;
   }
 `;

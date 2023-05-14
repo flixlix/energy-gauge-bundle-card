@@ -267,6 +267,14 @@ export interface EnergyData {
   fossilEnergyConsumptionCompare?: FossilEnergyConsumption;
 }
 
+export interface EnergyStates {
+  totalSolarProduction: number;
+  productionReturnedToGrid: number;
+  consumptionFromBattery: number;
+  productionToBattery: number;
+  consumptionFromGrid: number;
+}
+
 export const getReferencedStatisticIds = (prefs: EnergyPreferences, info: EnergyInfo, includeTypes?: string[]): string[] => {
   const statIDs: string[] = [];
 

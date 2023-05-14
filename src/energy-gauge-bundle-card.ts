@@ -3,12 +3,8 @@ import { css, CSSResultGroup, html, LitElement, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators';
 import { HomeAssistant } from './type/home-assistant';
 import { LovelaceCard } from './type/lovelace-card';
-import { EnergyGaugeBundleCardConfig } from './energy-gauge-bundle-card-config';
+import { EnergyGaugeBundleCardConfig, Severities } from './energy-gauge-bundle-card-config';
 import { registerCustomCard } from './utils/register-custom-card';
-import { localize } from './localize/localize';
-import { logError } from './logging';
-import { styles } from './style';
-import { fireEvent } from './utils/fire-event';
 import { SubscribeMixin } from './energy/subscribe-mixin';
 import { EnergyData, energySourcesByType, getEnergyDataCollection } from './energy';
 import { UnsubscribeFunc } from 'home-assistant-js-websocket';
@@ -16,6 +12,10 @@ import { calculateStatisticsSumGrowth } from './energy/recorder';
 import { mdiInformation } from '@mdi/js';
 import { styleMap } from 'lit/directives/style-map';
 import { formatNumber } from 'custom-card-helpers';
+import { fireEvent } from './utils/fire-event';
+import { styles } from './style';
+import { GaugeInfo } from './types';
+import { localize } from './localize/localize';
 
 export const severityMap = {
   red: 'var(--error-color)',
@@ -37,7 +37,21 @@ export class EnergyGaugeBundleCard extends SubscribeMixin(LitElement) implements
 
   @state() private _data?: EnergyData;
 
+  @state() private min = 0;
+  @state() private max = 100;
+  @state() private value?: number;
+  @state() private needle = false;
+  @state() private unit_of_measurement = '%'; // set default unit of measurement to %
+  @state() private severity?: Severities;
+  @state() private decimals = 1;
+  @state() private name?: string;
+  @state() private tooltip?: string;
+
   protected hassSubscribeRequiredHostProps = ['_config'];
+
+  public connectedCallback() {
+    super.connectedCallback();
+  }
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
@@ -69,38 +83,44 @@ export class EnergyGaugeBundleCard extends SubscribeMixin(LitElement) implements
     const prefs = this._data.prefs;
     const types = energySourcesByType(prefs);
 
-    if (!types.solar) {
+    if ((!types.solar && !types.battery) || !types.grid) {
       return nothing;
     }
 
     const totalSolarProduction =
-      calculateStatisticsSumGrowth(
-        this._data.stats,
-        types.solar.map(source => source.stat_energy_from),
-      ) ?? 0;
+      (types.solar &&
+        calculateStatisticsSumGrowth(
+          this._data.stats,
+          types.solar.map(source => source.stat_energy_from),
+        )) ??
+      0;
 
     const productionReturnedToGrid =
       calculateStatisticsSumGrowth(
         this._data.stats,
-        types.grid![0].flow_to.map(flow => flow.stat_energy_to),
+        types.grid[0].flow_to.map(flow => flow.stat_energy_to),
       ) ?? 0;
 
     const consumptionFromBattery =
-      calculateStatisticsSumGrowth(
-        this._data.stats,
-        types.battery!.map(source => source.stat_energy_from),
-      ) ?? 0;
+      (types.battery &&
+        calculateStatisticsSumGrowth(
+          this._data.stats,
+          types.battery.map(source => source.stat_energy_from),
+        )) ??
+      0;
 
     const productionToBattery =
-      calculateStatisticsSumGrowth(
-        this._data.stats,
-        types.battery!.map(source => source.stat_energy_to),
-      ) ?? 0;
+      (types.battery &&
+        calculateStatisticsSumGrowth(
+          this._data.stats,
+          types.battery.map(source => source.stat_energy_to),
+        )) ??
+      0;
 
     const consumptionFromGrid =
       calculateStatisticsSumGrowth(
         this._data.stats,
-        types.grid![0].flow_from.map(flow => flow.stat_energy_from),
+        types.grid[0].flow_from.map(flow => flow.stat_energy_from),
       ) ?? 0;
 
     const totalConsumption: number =
@@ -110,35 +130,81 @@ export class EnergyGaugeBundleCard extends SubscribeMixin(LitElement) implements
 
     const autarky = totalConsumption > 0 ? (selfConsumption / totalConsumption) * 100 : 0;
 
-    const value = formatNumber(autarky, this.hass.locale);
+    const consumedSolar = Math.max(0, totalSolarProduction - productionReturnedToGrid);
 
-    const tooltip = html`
-      ${this.hass.localize('ui.panel.lovelace.cards.energy.solar_consumed_gauge.card_indicates_solar_energy_used')}
-      <br /><br />
-      ${this.hass.localize('ui.panel.lovelace.cards.energy.solar_consumed_gauge.card_indicates_solar_energy_used_charge_home_bat')}
-    `;
+    const selfConsumptionPercentage = totalSolarProduction > 0 ? (consumedSolar / totalSolarProduction) * 100 : 0;
 
-    const autarkyCard = this._config?.autarky_card;
+    const autarkyType = {
+      value: autarky,
+      name: localize('gauge_name.autarky'),
+      tooltip: localize('tooltip.autarky'),
+      needle: true,
+      severity: {
+        green: 70,
+        yellow: 30,
+        red: 0,
+      },
+    };
 
+    const selfConsumptionType = {
+      value: selfConsumptionPercentage,
+      name: localize('gauge_name.self_consumption'),
+      tooltip: localize('tooltip.self_consumption'),
+      severity: {
+        green: 70,
+        yellow: 30,
+        red: 0,
+      },
+    };
+
+    switch (this._config.gauge_type) {
+      case 'self_consumption':
+        for (const i in selfConsumptionType) {
+          this[i] = selfConsumptionType[i];
+        }
+        break;
+      default: // default to autarky
+        for (const i in autarkyType) {
+          this[i] = autarkyType[i];
+        }
+    }
+
+    let k: keyof EnergyGaugeBundleCardConfig;
+    // Override defaults with possible config values
+    for (k in this._config) {
+      if (k in this) {
+        this[k] = this._config[k];
+      }
+    }
+
+    this.style.setProperty('--cursor-type', this._config.clickable ? 'pointer' : 'default');
     return html`
-      <ha-card>
-        ${value !== undefined
+      <ha-card .header=${this._config.title}>
+        ${this.value !== undefined
           ? html`
-              <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
-              <simple-tooltip animation-delay="0" for="info" position="left"> <span>${tooltip}</span> </simple-tooltip>
+              ${this._config.show?.tooltip !== false
+                ? html`
+                    <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
+                    <simple-tooltip animation-delay="0" for="info" position="left"> <span>${this.tooltip}</span> </simple-tooltip>
+                  `
+                : nothing}
               <ha-gauge
-                min=${autarkyCard?.min || '0'}
-                max=${autarkyCard?.max || '100'}
-                .value=${autarky}
+                @click=${this._handleClick}
                 .locale=${this.hass.locale}
-                .needle=${this._config.needle || autarkyCard?.needle || false}
-                .levels=${this._config!.needle ? this._severityLevels() : undefined}
-                label=${this._config.unit || autarkyCard?.label || ''}
+                min=${this.min}
+                max=${this.max}
+                .value=${this.value}
+                label=${this.unit_of_measurement}
+                .valueText=${formatNumber(this.value, this.hass.locale, {
+                  maximumFractionDigits: this._config?.decimals ?? this?.decimals,
+                })}
+                .needle=${this.needle}
+                .levels=${this.needle ? this._severityLevels(this.severity) : undefined}
                 style=${styleMap({
-                  '--gauge-color': this._computeSeverity(autarky),
+                  '--gauge-color': this._computeSeverity(autarky, this.severity),
                 })}
               ></ha-gauge>
-              <div class="name">${'Autarky'}</div>
+              ${this._config.show?.name !== false ? html` <div class="name">${this.name}</div>` : nothing}
             `
           : totalSolarProduction === 0
           ? this.hass.localize('ui.panel.lovelace.cards.energy.solar_consumed_gauge.not_produced_solar_energy')
@@ -147,19 +213,14 @@ export class EnergyGaugeBundleCard extends SubscribeMixin(LitElement) implements
     `;
   }
 
-  private _severityLevels() {
-    // new format
-    const segments = this._config!.segments;
-    if (segments) {
-      return segments.map(segment => ({
-        level: segment?.from,
-        stroke: segment?.color,
-        label: segment?.label,
-      }));
-    }
+  // in case user wants a clickable card, we need to handle the click
+  private _handleClick(): void {
+    if (this._config?.clickable && this._config.entity) fireEvent(this, 'hass-more-info', { entityId: this._config!.entity });
+  }
 
-    // old format
-    const sections = this._config!.severity;
+  // used for the needle gauge
+  private _severityLevels(defaultSeverity?: Severities) {
+    const sections = this._config!.severity || defaultSeverity;
 
     if (!sections) {
       return [{ level: 0, stroke: severityMap.normal }];
@@ -172,27 +233,13 @@ export class EnergyGaugeBundleCard extends SubscribeMixin(LitElement) implements
     }));
   }
 
-  private _computeSeverity(numberValue: number): string | undefined {
+  // used for the normal gauge
+  private _computeSeverity(numberValue: number, defaultSeverity?: Severities): string | undefined {
     if (this._config!.needle) {
       return undefined;
     }
 
-    // new format
-    let segments = this._config!.segments;
-    if (segments) {
-      segments = [...segments].sort((a, b) => a.from - b.from);
-
-      for (let i = 0; i < segments.length; i++) {
-        const segment = segments[i];
-        if (segment && numberValue >= segment.from && (i + 1 === segments.length || numberValue < segments[i + 1]?.from)) {
-          return segment.color;
-        }
-      }
-      return severityMap.normal;
-    }
-
-    // old format
-    const sections = this._config!.severity;
+    const sections = this._config!.severity || defaultSeverity;
 
     if (!sections) {
       return severityMap.normal;
@@ -220,51 +267,7 @@ export class EnergyGaugeBundleCard extends SubscribeMixin(LitElement) implements
     return severityMap.normal;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-card {
-        height: 100%;
-        overflow: hidden;
-        padding: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        box-sizing: border-box;
-      }
-
-      ha-gauge {
-        width: 100%;
-        max-width: 250px;
-        direction: ltr;
-      }
-
-      .name {
-        text-align: center;
-        line-height: initial;
-        color: var(--primary-text-color);
-        width: 100%;
-        font-size: 15px;
-        margin-top: 8px;
-      }
-
-      ha-svg-icon {
-        position: absolute;
-        right: 4px;
-        top: 4px;
-        color: var(--secondary-text-color);
-      }
-      simple-tooltip > span {
-        font-size: 12px;
-        line-height: 12px;
-      }
-      simple-tooltip {
-        width: 80%;
-        max-width: 250px;
-        top: 8px !important;
-      }
-    `;
-  }
+  static styles = styles;
 }
 declare global {
   interface HTMLElementTagNameMap {

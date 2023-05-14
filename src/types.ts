@@ -1,6 +1,9 @@
 import { ActionConfig, BaseActionConfig, HapticType, LovelaceCard, LovelaceCardConfig, LovelaceCardEditor } from 'custom-card-helpers';
 import { HassEntity, HassServiceTarget } from 'home-assistant-js-websocket';
 import { UNIT_PREFIXES } from './const';
+import { Severities } from './energy-gauge-bundle-card-config';
+import { EnergyStates } from './energy';
+import { TemplateResult } from 'lit';
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -219,4 +222,15 @@ export interface ToggleButton {
   label: string;
   iconPath?: string;
   value: string;
+}
+
+export interface GaugeInfo {
+  min: number;
+  max: number;
+  decimals?: number;
+  severity: Severities;
+  unit: string;
+  value?: number;
+  tooltip?: string | TemplateResult<1>;
+  name?: string;
 }
