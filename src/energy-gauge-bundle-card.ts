@@ -11,7 +11,7 @@ import { UnsubscribeFunc } from 'home-assistant-js-websocket';
 import { calculateStatisticsSumGrowth } from './energy/recorder';
 import { mdiInformation } from '@mdi/js';
 import { styleMap } from 'lit/directives/style-map';
-import { formatNumber } from 'custom-card-helpers';
+import { formatNumber, LovelaceCardEditor } from 'custom-card-helpers';
 import { fireEvent } from './utils/fire-event';
 import { styles } from './style';
 import { GaugeInfo } from './types';
@@ -51,6 +51,11 @@ export class EnergyGaugeBundleCard extends SubscribeMixin(LitElement) implements
 
   public connectedCallback() {
     super.connectedCallback();
+  }
+
+  public static async getConfigElement(): Promise<LovelaceCardEditor> {
+    await import('./ui-editor/ui-editor');
+    return document.createElement('energy-gauge-bundle-card-editor');
   }
 
   public hassSubscribe(): UnsubscribeFunc[] {

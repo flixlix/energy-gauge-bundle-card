@@ -6,5 +6,12 @@
   "tooltip": {
     "autarky": "The Autarky gauge shows how much of your home's energy consumption is covered by your own systems such as solar production or home batteries.",
     "self_consumption": "The Self Consumption gauge shows how much of your home's solar production is consumed by your home. This value is beneficial, meaning the more of your solar production that is consumed by your home, the better and the higher the number."
+  },
+  "ui_editor": {
+    "gauge_type": "Gauge Type",
+    "tooltip": "Tooltip",
+    "show_tooltip": "Show Tooltip",
+    "show_name": "Show Name",
+    "only_for_tap_action": "Only for Tap Action"
   }
 }
