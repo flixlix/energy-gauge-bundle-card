@@ -12,7 +12,7 @@ This card aims to offer a customizable gauge visualization for Home Assistant th
 
 > What's the difference from this card to the official Gauge Card?
 
-Compared to the original Gauge Card, the main advantages of this card are its customizability and the ability to sync with the energy date selection, ensuring dynamic information updates over different periods of time.
+Compared to the original Gauge Card, the main advantages of this card are its customizability and the ability to sync with the energy date selection, ensuring dynamic information updates over different periods of time. Most important of all, this card shows different types of information, that are otherwise simply not accessible from the official cards.
 
 ## Recommendation
 
