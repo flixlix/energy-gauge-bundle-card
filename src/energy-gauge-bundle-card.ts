@@ -16,6 +16,7 @@ import { fireEvent } from './utils/fire-event';
 import { styles } from './style';
 import { GaugeInfo } from './types';
 import { localize } from './localize/localize';
+import './components/ha-gauge';
 
 export const severityMap = {
   red: 'var(--error-color)',
@@ -51,6 +52,10 @@ export class EnergyGaugeBundleCard extends SubscribeMixin(LitElement) implements
 
   public connectedCallback() {
     super.connectedCallback();
+  }
+
+  async firstUpdated() {
+    (await (window as any).loadCardHelpers()).importMoreInfoControl('gauge'); // This is needed to render the datepicker!!!
   }
 
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
