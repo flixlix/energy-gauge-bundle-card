@@ -16,7 +16,6 @@ import { fireEvent } from './utils/fire-event';
 import { styles } from './style';
 import { GaugeInfo } from './types';
 import { localize } from './localize/localize';
-import './components/ha-gauge';
 import { loadHaComponents } from './utils/loader';
 
 export const severityMap = {

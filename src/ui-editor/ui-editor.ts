@@ -65,14 +65,14 @@ export class EnergyGaugeBundleCardEditor extends LitElement implements LovelaceC
     );
     this._config = config;
     config.gauge_type = this._config?.gauge_type || 'autarky';
-    config.needle = this._config?.needle || true;
-    config.min = this._config?.min || 0;
-    config.max = this._config?.max || 100;
-    config.severity = this._config?.severity || {
+    config.needle = this._config?.needle ?? true;
+    config.min = this._config?.min ?? 0;
+    config.max = this._config?.max ?? 100;
+    /* config.severity = this._config?.severity ?? {
       green: 70,
       yellow: 30,
       red: 0,
-    };
+    }; */
     config.decimals = this._config?.decimals || 1;
     config.show ? (config.show.name = this._config?.show?.name) : (config.show = { name: true });
   }
