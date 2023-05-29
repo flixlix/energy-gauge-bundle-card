@@ -13,6 +13,7 @@ export interface EnergyGaugeBundleCardConfig extends LovelaceCardConfig, EnergyC
   show?: {
     tooltip?: boolean;
     name?: boolean;
+    severity?: boolean;
   };
   name?: string;
   tooltip?: string;

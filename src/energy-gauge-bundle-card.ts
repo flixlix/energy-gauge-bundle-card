@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { css, CSSResultGroup, html, LitElement, nothing } from 'lit';
+import { css, CSSResultGroup, html, LitElement, nothing, PropertyValues } from 'lit';
 import { customElement, property, state } from 'lit/decorators';
 import { HomeAssistant } from './type/home-assistant';
 import { LovelaceCard } from './type/lovelace-card';
@@ -11,7 +11,7 @@ import { UnsubscribeFunc } from 'home-assistant-js-websocket';
 import { calculateStatisticsSumGrowth } from './energy/recorder';
 import { mdiInformation } from '@mdi/js';
 import { styleMap } from 'lit/directives/style-map';
-import { formatNumber, LovelaceCardEditor } from 'custom-card-helpers';
+import { formatNumber, hasConfigOrEntityChanged, LovelaceCardEditor } from 'custom-card-helpers';
 import { fireEvent } from './utils/fire-event';
 import { styles } from './style';
 import { GaugeInfo } from './types';
@@ -208,7 +208,7 @@ export class EnergyGaugeBundleCard extends SubscribeMixin(LitElement) implements
                 .needle=${this.needle}
                 .levels=${this.needle ? this._severityLevels(this.severity) : undefined}
                 style=${styleMap({
-                  '--gauge-color': this._computeSeverity(autarky, this.severity),
+                  '--gauge-color': this._computeSeverity(this.value, this.severity),
                 })}
               ></ha-gauge>
               ${this._config.show?.name !== false ? html` <div class="name">${this.name}</div>` : nothing}
@@ -222,7 +222,7 @@ export class EnergyGaugeBundleCard extends SubscribeMixin(LitElement) implements
 
   // in case user wants a clickable card, we need to handle the click
   private _handleClick(): void {
-    if (this._config?.clickable && this._config.entity) fireEvent(this, 'hass-more-info', { entityId: this._config!.entity });
+    if (this._config?.clickable && this._config.entity) fireEvent(this, 'hass-more-info', { entityId: this._config.entity });
   }
 
   // used for the needle gauge
