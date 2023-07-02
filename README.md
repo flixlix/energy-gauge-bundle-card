@@ -19,7 +19,7 @@ Compared to the original Gauge Card, the main advantages of this card are its cu
 
 If you would like to customize the Energy period selector and its dates, I recommend using this card: [Energy Period Selector Plus](https://github.com/flixlix/energy-period-selector-plus)
 
-## Install
+## Installation
 
 ### HACS (recommended)
 
