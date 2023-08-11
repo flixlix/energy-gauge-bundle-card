@@ -12,8 +12,21 @@ import {
 } from 'date-fns/esm';
 import { Collection, getCollection } from 'home-assistant-js-websocket';
 import { HomeAssistant } from '../type/home-assistant';
+import { ConfigEntry, getConfigEntries } from './config-entries';
+import { fetchStatistics, getStatisticMetadata, Statistics, StatisticsMetaData, StatisticsUnitConfiguration } from './recorder';
 
-
+const groupBy = <T>(list: T[], keySelector: (item: T) => string): { [key: string]: T[] } => {
+  const result = {};
+  for (const item of list) {
+    const key = keySelector(item);
+    if (key in result) {
+      result[key].push(item);
+    } else {
+      result[key] = [item];
+    }
+  }
+  return result;
+};
 
 const energyCollectionKeys: (string | undefined)[] = [];
 
@@ -235,57 +248,9 @@ interface EnergySourceByType {
   gas?: GasSourceTypeEnergyPreference[];
   water?: WaterSourceTypeEnergyPreference[];
 }
-export const groupBy = <T>(list: T[], keySelector: (item: T) => string): { [key: string]: T[] } => {
-  const result = {};
-  for (const item of list) {
-    const key = keySelector(item);
-    if (key in result) {
-      result[key].push(item);
-    } else {
-      result[key] = [item];
-    }
-  }
-  return result;
-};
 
 export const energySourcesByType = (prefs: EnergyPreferences) => groupBy(prefs.energy_sources, item => item.type) as EnergySourceByType;
 
-export interface StatisticsMetaData {
-  statistics_unit_of_measurement: string | null;
-  statistic_id: string;
-  source: string;
-  name?: string | null;
-  has_sum: boolean;
-  has_mean: boolean;
-  unit_class: string | null;
-}
-export interface StatisticValue {
-  start: number;
-  end: number;
-  last_reset?: number | null;
-  max?: number | null;
-  mean?: number | null;
-  min?: number | null;
-  sum?: number | null;
-  state?: number | null;
-}
-export interface Statistics {
-  [statisticId: string]: StatisticValue[];
-}
-export interface ConfigEntry {
-  entry_id: string;
-  domain: string;
-  title: string;
-  source: string;
-  state: 'loaded' | 'setup_error' | 'migration_error' | 'setup_retry' | 'not_loaded' | 'failed_unload' | 'setup_in_progress';
-  supports_options: boolean;
-  supports_remove_device: boolean;
-  supports_unload: boolean;
-  pref_disable_new_entities: boolean;
-  pref_disable_polling: boolean;
-  disabled_by: 'user' | null;
-  reason: string | null;
-}
 export interface EnergyData {
   start: Date;
   end?: Date;
@@ -359,66 +324,6 @@ export const getReferencedStatisticIds = (prefs: EnergyPreferences, info: Energy
 
   return statIDs;
 };
-
-export type IntegrationType = 'device' | 'helper' | 'hub' | 'service' | 'hardware';
-
-export const getConfigEntries = (
-  hass: HomeAssistant,
-  filters?: {
-    type?: IntegrationType[];
-    domain?: string;
-  },
-): Promise<ConfigEntry[]> => {
-  const params: any = {};
-  if (filters) {
-    if (filters.type) {
-      params.type_filter = filters.type;
-    }
-    if (filters.domain) {
-      params.domain = filters.domain;
-    }
-  }
-  return hass.callWS<ConfigEntry[]>({
-    type: 'config_entries/get',
-    ...params,
-  });
-};
-
-export interface StatisticsUnitConfiguration {
-  energy?: 'Wh' | 'kWh' | 'MWh' | 'GJ';
-  power?: 'W' | 'kW';
-  pressure?: 'Pa' | 'hPa' | 'kPa' | 'bar' | 'cbar' | 'mbar' | 'inHg' | 'psi' | 'mmHg';
-  temperature?: '°C' | '°F' | 'K';
-  volume?: 'L' | 'gal' | 'ft³' | 'm³';
-}
-
-const statisticTypes = ['last_reset', 'max', 'mean', 'min', 'state', 'sum'] as const;
-
-export type StatisticsTypes = (typeof statisticTypes)[number][];
-
-export const getStatisticMetadata = (hass: HomeAssistant, statistic_ids?: string[]) =>
-  hass.callWS<StatisticsMetaData[]>({
-    type: 'recorder/get_statistics_metadata',
-    statistic_ids,
-  });
-export const fetchStatistics = (
-  hass: HomeAssistant,
-  startTime: Date,
-  endTime?: Date,
-  statistic_ids?: string[],
-  period: '5minute' | 'hour' | 'day' | 'week' | 'month' = 'hour',
-  units?: StatisticsUnitConfiguration,
-  types?: StatisticsTypes,
-) =>
-  hass.callWS<Statistics>({
-    type: 'recorder/statistics_during_period',
-    start_time: startTime.toISOString(),
-    end_time: endTime?.toISOString(),
-    statistic_ids,
-    period,
-    units,
-    types,
-  });
 
 const getEnergyData = async (hass: HomeAssistant, prefs: EnergyPreferences, start: Date, end?: Date, compare?: boolean): Promise<EnergyData> => {
   const [configEntries, info] = await Promise.all([getConfigEntries(hass, { domain: 'co2signal' }), getEnergyInfo(hass)]);
@@ -527,7 +432,6 @@ const getEnergyData = async (hass: HomeAssistant, prefs: EnergyPreferences, star
   }
 
   const statsMetadata: Record<string, StatisticsMetaData> = {};
-
   const _getStatisticMetadata: Promise<StatisticsMetaData[]> | StatisticsMetaData[] = allStatIDs.length ? getStatisticMetadata(hass, allStatIDs) : [];
   const [
     energyStats,
