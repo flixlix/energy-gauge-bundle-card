@@ -1,0 +1,17 @@
+{
+    "gauge_name": {
+        "autarky": "Itsevoittoisuus",
+        "self_consumption": "Oman kulutuksen osuus"
+    },
+    "tooltip": {
+        "autarky": "Itsevoittoisuuden mittari näyttää kuinka suuri osa kotisi energiankulutuksesta katetaan omilla järjestelmilläsi, kuten aurinkopaneelien tuotannolla tai kotiakkujen avulla.",
+        "self_consumption": "Oman kulutuksen osuuden mittari näyttää kuinka paljon kotisi aurinkopaneelien tuotannosta kuluu kotisi omaan käyttöön. Tämä arvo on hyödyllinen, mikä tarkoittaa, että mitä enemmän aurinkopaneelien tuotannosta kulutetaan kotisi toimesta, sitä parempi ja korkeampi on lukema."
+    },
+    "ui_editor": {
+        "gauge_type": "Mittarin tyyppi",
+        "tooltip": "Työkalun vihje",
+        "show_tooltip": "Näytä työkalun vihje",
+        "show_name": "Näytä nimi",
+        "only_for_tap_action": "Vain napautustoiminnolle"
+    }
+}

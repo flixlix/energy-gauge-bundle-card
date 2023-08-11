@@ -1,0 +1,17 @@
+{
+  "gauge_name": {
+    "autarky": "Autarcie",
+    "self_consumption": "Autoconsommation"
+  },
+  "tooltip": {
+    "autarky": "Le jauge Autarcie montre quelle part de la consommation d'énergie de votre maison est couverte par vos propres systèmes, tels que la production solaire ou les batteries domestiques.",
+    "self_consumption": "La jauge Autoconsommation montre quelle part de la production solaire de votre maison est consommée par celle-ci. Cette valeur est bénéfique, ce qui signifie que plus votre maison consomme de votre production solaire, mieux c'est et plus le chiffre est élevé."
+  },
+  "ui_editor": {
+    "gauge_type": "Type de Jauge",
+    "tooltip": "Info-bulle",
+    "show_tooltip": "Afficher l'info-bulle",
+    "show_name": "Afficher le Nom",
+    "only_for_tap_action": "Uniquement pour l'action de tapotement"
+  }
+}

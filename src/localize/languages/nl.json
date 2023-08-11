@@ -1,0 +1,18 @@
+{
+    "gauge_name": {
+      "autarky": "Autarkie",
+      "self_consumption": "Eigenverbruik"
+    },
+    "tooltip": {
+      "autarky": "De Autarkie-meter laat zien hoeveel van het energieverbruik van je huis wordt gedekt door je eigen systemen, zoals zonne-energieproductie of thuisbatterijen.",
+      "self_consumption": "De Eigenverbruik-meter laat zien hoeveel van de zonne-energieproductie van je huis wordt verbruikt door je huis. Dit is gunstig, wat betekent dat hoe meer van je zonne-energieproductie door je huis wordt verbruikt, hoe beter en hoe hoger het getal."
+    },
+    "ui_editor": {
+      "gauge_type": "Type Meter",
+      "tooltip": "Tooltip",
+      "show_tooltip": "Toon Tooltip",
+      "show_name": "Toon Naam",
+      "only_for_tap_action": "Alleen voor Tikactie"
+    }
+  }
+  

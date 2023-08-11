@@ -2,7 +2,6 @@ import { ActionConfig, BaseActionConfig, HapticType, LovelaceCard, LovelaceCardC
 import { HassEntity, HassServiceTarget } from 'home-assistant-js-websocket';
 import { UNIT_PREFIXES } from './const';
 import { Severities } from './energy-gauge-bundle-card-config';
-import { EnergyStates } from './energy';
 import { TemplateResult } from 'lit';
 
 declare global {

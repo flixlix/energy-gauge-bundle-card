@@ -1,0 +1,17 @@
+{
+    "gauge_name": {
+        "autarky": "Autarkia",
+        "self_consumption": "Samozużycie"
+    },
+    "tooltip": {
+        "autarky": "Wskaźnik Autarkii pokazuje, ile z zapotrzebowania energetycznego Twojego domu pokrywają własne systemy, takie jak produkcja energii słonecznej lub baterie domowe.",
+        "self_consumption": "Wskaźnik Samozużycia pokazuje, ile energii słonecznej wyprodukowanej przez Twój dom jest zużywane przez ten dom. Ta wartość jest korzystna, co oznacza, że im więcej energii słonecznej jest zużywane przez Twój dom, tym lepiej i wyższa jest wartość."
+    },
+    "ui_editor": {
+        "gauge_type": "Typ wskaźnika",
+        "tooltip": "Opis",
+        "show_tooltip": "Pokaż opis",
+        "show_name": "Pokaż nazwę",
+        "only_for_tap_action": "Tylko dla akcji dotknięcia"
+    }
+}

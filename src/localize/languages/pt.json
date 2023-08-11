@@ -1,0 +1,17 @@
+{
+    "gauge_name": {
+        "autarky": "Autarquia",
+        "self_consumption": "Autoconsumo"
+    },
+    "tooltip": {
+        "autarky": "O manómetro de Autarquia mostra quanto do consumo de energia da sua casa é coberto pelos seus próprios sistemas, como produção solar ou baterias domésticas.",
+        "self_consumption": "O manómetro de Autoconsumo mostra quanto da produção solar da sua casa é consumida internamente. Esse valor é beneficiário, ou seja, quanto mais da sua produção solar for consumida pela sua casa, melhor e maior o número."
+    },
+    "ui_editor": {
+        "gauge_type": "Tipo de Medidor",
+        "tooltip": "Dica de ferramenta",
+        "show_tooltip": "Mostrar dica de ferramenta",
+        "show_name": "Mostrar nome",
+        "only_for_tap_action": "Apenas para ação de toque"
+    }
+}

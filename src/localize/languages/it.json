@@ -1,0 +1,17 @@
+{
+  "gauge_name": {
+    "autarky": "Autarchia",
+    "self_consumption": "Autoconsumo"
+  },
+  "tooltip": {
+    "autarky": "Il medidor di Autarchia mostra quanto del consumo energetico della tua casa è coperto dai tuoi stessi sistemi, come la produzione solare o le batterie domestiche.",
+    "self_consumption": "Il medidor di Autoconsumo mostra quanto della produzione solare della tua casa viene consumata dalla stessa. Questo valore è vantaggioso, il che significa che più produzione solare viene consumata dalla tua casa, migliore è il valore e più alto sarà il numero."
+  },
+  "ui_editor": {
+    "gauge_type": "Tipo di Medidor",
+    "tooltip": "Tooltip",
+    "show_tooltip": "Mostra Tooltip",
+    "show_name": "Mostra Nome",
+    "only_for_tap_action": "Solo per Azione al Tap"
+  }
+}
